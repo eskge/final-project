@@ -1,8 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, HistGradientBoostingClassifier
 from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
 # import lightgbm as lgb
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 import joblib
@@ -71,6 +72,43 @@ def train_model(df, target_col='Churn'):
         #         'colsample_bytree': [0.7, 0.8, 0.9],
         #     }
         # }
+        {
+            'name': 'LogisticRegression',
+            'estimator': LogisticRegression(random_state=42, solver='liblinear', class_weight='balanced'),
+            'param_grid': {
+                'C': np.logspace(-3, 3, 7), # Inverse of regularization strength
+                'penalty': ['l1', 'l2']
+            }
+        },
+        {
+            'name': 'GradientBoosting',
+            'estimator': GradientBoostingClassifier(random_state=42),
+            'param_grid': {
+                'n_estimators': [100, 200, 300, 400, 500],
+                'learning_rate': [0.005, 0.01, 0.05, 0.1, 0.15],
+                'max_depth': [3, 5, 7, 9, 11],
+                'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
+                'max_features': ['sqrt', 'log2', None, 0.6, 0.8]
+            }
+        },
+        {
+            'name': 'AdaBoost',
+            'estimator': AdaBoostClassifier(random_state=42),
+            'param_grid': {
+                'n_estimators': [50, 100, 150, 200, 250],
+                'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2, 0.5, 1.0]
+            }
+        },
+        {
+            'name': 'HistGradientBoosting',
+            'estimator': HistGradientBoostingClassifier(random_state=42),
+            'param_grid': {
+                'max_iter': [100, 200, 300, 400, 500],
+                'learning_rate': [0.005, 0.01, 0.05, 0.1, 0.15, 0.2],
+                'max_depth': [None, 3, 5, 7, 9, 11],
+                'min_samples_leaf': [10, 20, 30, 40, 50, 60]
+            }
+        }
     ]
 
     results = []
@@ -115,6 +153,12 @@ def train_model(df, target_col='Churn'):
         })
 
         print(f"--- Finished tuning {model_info['name']} ---")
+        print(f"  Accuracy: {accuracy:.4f}")
+        print(f"  Precision: {precision:.4f}")
+        print(f"  Recall: {recall:.4f}")
+        print(f"  F1-Score: {f1:.4f}")
+        print(f"  ROC-AUC: {roc_auc:.4f}")
+        print(f"  Best Params: {random_search.best_params_}")
 
     # --- Display Results ---
     print("\n\n--- Model Comparison ---")
