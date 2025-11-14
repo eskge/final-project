@@ -1,0 +1,5 @@
+{
+  "name": "Telco Churn Prediction Dashboard",
+  "description": "A web interface for an end-to-end machine learning pipeline to predict customer churn. It allows users to simulate running the full data processing and model training pipeline, upload new data for prediction, and view mock reports.",
+  "requestFramePermissions": []
+}

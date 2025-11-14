@@ -1,0 +1,4 @@
+customerID,Predicted_Churn,Churn_Probability
+CUST-001,1,0.71
+CUST-002,0,0.14
+CUST-003,0,0.08
